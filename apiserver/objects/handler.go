@@ -8,6 +8,8 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 		put(w, r)
 	} else if method == http.MethodGet {
 		get(w, r)
+	} else if method == http.MethodDelete {
+		del(w, r)
 	} else {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 	}
