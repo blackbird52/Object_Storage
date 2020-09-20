@@ -18,14 +18,6 @@ GET /objects/<object_name>?version=<version_id>
 
 DELETE /objects/<object_name>
 
-
-
-GET /locate/<object_name>
-
-GET /versions/
-
-GET /versions/<object_name>
-
 ## 元数据
 
 ```json

@@ -5,7 +5,6 @@ import (
 	"lib/utils"
 	"log"
 	"net/http"
-	"net/url"
 	"strings"
 )
 
@@ -17,7 +16,8 @@ func put(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	status, err := storeObject(r.Body, url.PathEscape(hash))
+	size := utils.GetSizeFromHeader(r.Header)
+	status, err := storeObject(r.Body, hash, size)
 	if err != nil {
 		log.Println(err)
 		w.WriteHeader(status)
@@ -29,7 +29,6 @@ func put(w http.ResponseWriter, r *http.Request) {
 	}
 
 	name := strings.Split(r.URL.EscapedPath(), "/")[2]
-	size := utils.GetSizeFromHeader(r.Header)
 	err = es.AddVersion(name, hash, size)
 	if err != nil {
 		log.Println(err)
