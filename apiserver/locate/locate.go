@@ -3,9 +3,10 @@ package locate
 import (
 	"encoding/json"
 	"lib/rabbitmq"
+	"lib/rs"
+	"lib/types"
 	"net/http"
 	"os"
-	"strconv"
 	"strings"
 	"time"
 )
@@ -25,19 +26,27 @@ func Handler(w http.ResponseWriter, r *http.Request) {
 	_, _ = w.Write(bytes)
 }
 
-func Locate(name string) string {
-	rabbitMQ:= rabbitmq.New(os.Getenv("RABBITMQ_SERVER"))
+func Locate(name string) (locateInfo map[int]string) {
+	rabbitMQ := rabbitmq.New(os.Getenv("RABBITMQ_SERVER"))
 	rabbitMQ.Publish("dataServers", name)
 	channel := rabbitMQ.Consume()
 	go func() {
 		time.Sleep(time.Second)
 		rabbitMQ.Close()
 	}()
-	msg := <-channel
-	server, _ := strconv.Unquote(string(msg.Body))
-	return server
+	locateInfo = make(map[int]string)
+	for i := 0; i < rs.ALL_SHARDS; i++ {
+		msg := <-channel
+		if len(msg.Body) == 0 {
+			return
+		}
+		var message types.LocateMessage
+		_ = json.Unmarshal(msg.Body, &message)
+		locateInfo[message.Id] = message.Addr
+	}
+	return
 }
 
 func Exist(name string) bool {
-	return Locate(name) != ""
+	return len(Locate(name)) >= rs.DATA_SHARDS
 }

@@ -2,7 +2,6 @@ package heartbeat
 
 import (
 	"lib/rabbitmq"
-	"math/rand"
 	"os"
 	"strconv"
 	"sync"
@@ -50,13 +49,4 @@ func GetDataServers() []string {
 		ds = append(ds, s)
 	}
 	return ds
-}
-
-func ChooseRandomDataServer() string {
-	ds := GetDataServers()
-	n := len(ds)
-	if n == 0 {
-		return ""
-	}
-	return ds[rand.Intn(n)]
 }

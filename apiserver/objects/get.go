@@ -24,16 +24,27 @@ func get(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 	meta, err := es.GetMetadata(name, version)
+	if err != nil {
+		log.Println(err)
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
 	if meta.Hash == "" {
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
-	object := url.PathEscape(meta.Hash)
-	stream, err := getStream(object)
+	hash := url.PathEscape(meta.Hash)
+	stream, err := GetStream(hash, meta.Size)
 	if err != nil {
 		log.Println(err)
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
-	_, _ = io.Copy(w, stream)
+	_, err = io.Copy(w, stream)
+	if err != nil {
+		log.Println(err)
+		w.WriteHeader(http.StatusNotFound)
+		return
+	}
+	stream.Close()
 }
