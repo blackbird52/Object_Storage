@@ -46,6 +46,12 @@ GET /versions/<object_name>
 ```
 
 ```
+HEAD /temp/<token>
+响应头部：
+	- Content-Range: <token 当前的上传字节数>
+```
+
+```
 DELETE /objects/<object_name>
 ```
 
