@@ -1,8 +1,10 @@
 package objects
 
 import (
+	"fmt"
 	"io"
 	"lib/es"
+	"lib/utils"
 	"log"
 	"net/http"
 	"net/url"
@@ -40,11 +42,12 @@ func get(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusNotFound)
 		return
 	}
-	_, err = io.Copy(w, stream)
-	if err != nil {
-		log.Println(err)
-		w.WriteHeader(http.StatusNotFound)
-		return
+	offset := utils.GetOffsetFromHeader(r.Header)
+	if offset != 0 {
+		_, _ = stream.Seek(offset, io.SeekCurrent)
+		w.Header().Set("content-range", fmt.Sprintf("bytes %d-%d/%d", offset, meta.Size-1, meta.Size))
+		w.WriteHeader(http.StatusPartialContent)
 	}
+	_, _ = io.Copy(w, stream)
 	stream.Close()
 }

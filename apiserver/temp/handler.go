@@ -1,17 +1,15 @@
-package objects
+package temp
 
 import "net/http"
 
 func Handler(w http.ResponseWriter, r *http.Request) {
 	method := r.Method
-	if method == http.MethodPost {
-		post(w, r)
+	if method == http.MethodHead {
+		head(w, r)
+		return
 	} else if method == http.MethodPut {
 		put(w, r)
-	} else if method == http.MethodGet {
-		get(w, r)
-	} else if method == http.MethodDelete {
-		del(w, r)
+		return
 	} else {
 		w.WriteHeader(http.StatusMethodNotAllowed)
 	}

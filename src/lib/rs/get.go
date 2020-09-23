@@ -45,6 +45,25 @@ func NewRSGetStream(locateInfo map[int]string, dataServers []string, hash string
 	return &RSGetStream{dec}, nil
 }
 
+func (s *RSGetStream) Seek(offset int64, whence int) (int64, error) {
+	if whence != io.SeekCurrent {
+		panic("only support SeekCurrent")
+	}
+	if offset < 0 {
+		panic("only support forward seek")
+	}
+	for offset != 0 {
+		length := int64(BLOCK_SIZE)
+		if offset < length {
+			length = offset
+		}
+		buf := make([]byte, length)
+		_, _ = io.ReadFull(s, buf)
+		offset -= length
+	}
+	return offset, nil
+}
+
 func (s *RSGetStream) Close() {
 	for _, w := range s.writers {
 		if w != nil {
