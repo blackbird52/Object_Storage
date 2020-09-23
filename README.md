@@ -13,10 +13,29 @@
 ```
 PUT /objects/<object_name>
 请求头部：
-  - Digest: SHA-256=<Base64 code>
-  - Content-Length: <length>
+  - Digest: SHA-256=<对象散列值的 Base64 编码>
+  - Content-Length: <对象内容的长度>
 请求正文：
 	- 对象的内容
+```
+
+```
+POST /object/<object_name>
+请求头部：
+	- Digest: SHA-256=<对象散列值的 Base64 编码>
+  - Content-Length: <对象内容的长度>
+响应头部：
+	- Location: <访问 /temp/token/ 的 URL>
+
+HEAD /temp/<token>
+响应头部：
+	- Content-Range: <token 当前的上传字节数>
+
+PUT /temp/<token>
+请求头部：
+	- Range: bytes=<first>-<last>
+请求正文：
+	- 对象的内容：字节范围为 first～last
 ```
 
 ```
@@ -43,12 +62,6 @@ GET /versions/
 GET /versions/<object_name>
 响应正文：
 	- 指定对象的所有版本
-```
-
-```
-HEAD /temp/<token>
-响应头部：
-	- Content-Range: <token 当前的上传字节数>
 ```
 
 ```
