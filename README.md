@@ -55,6 +55,16 @@ GET /objects/<object_name>
 ```
 
 ```
+GET /objects/<object_name>
+请求头部：
+	- Accpet-Encoding: gzip
+响应头部：
+	- Content-Encoding: gzip
+响应正文：
+	- gzip 压缩后的对象内容
+```
+
+```
 GET /versions/
 响应正文：
 	- 所有对象的所有版本

@@ -1,12 +1,25 @@
 package objects
 
 import (
+	"compress/gzip"
 	"io"
+	"log"
 	"os"
 )
 
 func sendFile(w io.Writer, file string) {
-	f, _ := os.Open(file)
+	f, err := os.Open(file)
+	if err != nil {
+		log.Println(err)
+		return
+	}
 	defer f.Close()
-	_, _ = io.Copy(w, f)
+
+	gzipStream, err := gzip.NewReader(f)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	_, _ = io.Copy(w, gzipStream)
+	_ = gzipStream.Close()
 }

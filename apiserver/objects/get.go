@@ -1,6 +1,7 @@
 package objects
 
 import (
+	"compress/gzip"
 	"fmt"
 	"io"
 	"lib/es"
@@ -48,6 +49,21 @@ func get(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("content-range", fmt.Sprintf("bytes %d-%d/%d", offset, meta.Size-1, meta.Size))
 		w.WriteHeader(http.StatusPartialContent)
 	}
-	_, _ = io.Copy(w, stream)
+	acceptGzip := false
+	encoding := r.Header["Accept-Encoding"]
+	for i := range encoding {
+		if encoding[i] == "gzip" {
+			acceptGzip = true
+			break
+		}
+	}
+	if acceptGzip {
+		w.Header().Set("content-encoding", "gzip")
+		w2 := gzip.NewWriter(w)
+		_, _ = io.Copy(w2, stream)
+		_ = w2.Close()
+	} else {
+		_, _ = io.Copy(w, stream)
+	}
 	stream.Close()
 }
