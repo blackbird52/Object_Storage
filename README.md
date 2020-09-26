@@ -5,8 +5,9 @@
 - go version：1.15
 - 消息队列：RabbitMQ
 - 元数据服务：ElasticSearch
-- 数据冗余：RS纠删码
+- 数据冗余：RS 纠删码
 - 断点续传
+- 数据压缩：gzip
 
 ## REST 接口
 
